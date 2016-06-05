@@ -1,0 +1,7 @@
+Game_Party.prototype.maxItems = function(item) {
+    if(item.meta.maxItems != null){
+        return item.meta.maxItems;
+    } else {
+        return 99;
+    }
+};
