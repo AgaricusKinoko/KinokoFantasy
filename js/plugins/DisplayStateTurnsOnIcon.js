@@ -1,4 +1,4 @@
-//=============================================================================
+﻿//=============================================================================
 // Display State Turns On Icon
 // by lolaccount
 // Last Updated: 2015.11.26
@@ -23,7 +23,7 @@
  *
  * @param Decimal Places
  * @desc # of decimal places for non-integer turn counts
- * Default: 0    
+ * Default: 0
  * @default 0
  *
  * @help This plugin does not provide plugin commands.
@@ -59,7 +59,7 @@
     var turnFontSize = parseInt(parameters['Font Size'] || 16);
 // position of turn text
     var turnTextPosition = String(parameters['Position'] || 'topright');
-    
+
 // alias function
     var _Window_Base_drawActorIcons = Window_Base.prototype.drawActorIcons;
     Window_Base.prototype.drawActorIcons = function (actor, x, y, width) {
@@ -111,7 +111,8 @@
             // turns[i] checks if turn is defined, if not we'll get an error with toFixed
             if (turns[i] && turns[i] != 0) {
                 // draw the text for their turns remaining
-                this.drawText(turns[i].toFixed(decimalPlaces), this.turnsRemainingPosX(i,x), this.turnsRemainingPosY(y), Window_Base._iconWidth, 'center');
+                this.changeTextColor(this.powerUpColor());
+                this.drawText(turns[i].toFixed(decimalPlaces) + "t", this.turnsRemainingPosX(i,x) - 4, this.turnsRemainingPosY(y) + 18, Window_Base._iconWidth, 'center');
             }
         }
         // reset font size so other stuff isn't resized as well

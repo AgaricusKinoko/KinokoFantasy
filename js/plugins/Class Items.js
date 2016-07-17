@@ -6,9 +6,9 @@
 /*:
 * @plugindesc Specify items to be used only by certain classes.
 * @author Musashii
-* 
+*
 * @help
-* Use the notetag <classItem: id> in the Items Note to determine which class can 
+* Use the notetag <classItem: id> in the Items Note to determine which class can
 * use it. If no notetag is set the item will be available for all.
 *
 * Use <onlyAffect: id> inside items Note to make it affect only the class id.
@@ -25,7 +25,7 @@ var waitUseItem = 0;
 // Update Counter
 //===================================
 var _Window_BattleLog_startTurn = Window_BattleLog.prototype.startTurn;
-			
+
 Window_BattleLog.prototype.startTurn = function() {
 waitUseItem = 100
 _Window_BattleLog_startTurn.call
@@ -37,7 +37,7 @@ _Window_BattleLog_startTurn.call
 Game_BattlerBase.prototype.meetsItemConditions = function(item) {
  //usersClass = this._classId
   if(waitUseItem === 100){usersClass = this._classId}
-  
+
   //can't use item in menu if any actor in party have the class
   var checkClassInParty = 0;
 $gameParty.allMembers().forEach(function(entry){

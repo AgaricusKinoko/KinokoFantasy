@@ -1533,7 +1533,7 @@ Game_Action.prototype.evaluate = function() {
     }, this);
     value *= this.numRepeats();
     if (value > 0) {
-        //value += Math.random();
+        value += Math.random();
     }
     return value;
 };
@@ -2421,9 +2421,9 @@ Game_BattlerBase.prototype.paramMin = function(paramId) {
 
 Game_BattlerBase.prototype.paramMax = function(paramId) {
     if (paramId === 0) {
-        return 999999;  // MHP
+        return 9999999;  // MHP
     } else if (paramId === 1) {
-        return 9999;    // MMP
+        return 99999;    // MMP
     } else {
         return 9999;
     }
@@ -3824,6 +3824,8 @@ Game_Actor.prototype.bareHandsElementId = function() {
 Game_Actor.prototype.paramMax = function(paramId) {
     if (paramId === 0) {
         return 99999;    // MHP
+    } else if (paramId === 1) {
+        return 9999;    // M<P
     }
     return Game_Battler.prototype.paramMax.call(this, paramId);
 };
