@@ -1,5 +1,5 @@
-﻿//=============================================================================
-// rpg_windows.js v1.1.0
+//=============================================================================
+// rpg_windows.js v1.3.1
 //=============================================================================
 
 //-----------------------------------------------------------------------------
@@ -324,7 +324,7 @@ Window_Base.prototype.processCharacter = function(textState) {
 Window_Base.prototype.processNormalCharacter = function(textState) {
     var c = textState.text[textState.index++];
     var w = this.textWidth(c);
-    this.contents.drawText(c, textState.x, textState.y, w * 2, textState.height);
+    //this.contents.drawText(c, textState.x, textState.y, w * 2, textState.height);
     textState.x += w;
 };
 
@@ -5410,7 +5410,9 @@ Window_ActorCommand.prototype.addItemCommand = function() {
 Window_ActorCommand.prototype.setup = function(actor) {
     this._actor = actor;
     this.clearCommandList();
+    //this.changeTextColor(this.mpCostColor());
     this.makeCommandList();
+    //this.resetFontSettings();
     this.refresh();
     this.selectLast();
     this.activate();

@@ -1,5 +1,5 @@
 //=============================================================================
-// rpg_core.js
+// rpg_core.js v1.1.0
 //=============================================================================
 
 //-----------------------------------------------------------------------------
@@ -162,6 +162,16 @@ function Utils() {
  * @final
  */
 Utils.RPGMAKER_NAME = 'MV';
+
+/**
+ * The version of the RPG Maker.
+ *
+ * @static
+ * @property RPGMAKER_VERSION
+ * @type String
+ * @final
+ */
+Utils.RPGMAKER_VERSION = "1.1.0";
 
 /**
  * Checks whether the option is in the query string.
@@ -2275,8 +2285,8 @@ Input.keyMapper = {
 Input.gamepadMapper = {
     0: 'ok',        // A
     1: 'cancel',    // B
-    3: 'shift',     // Y
-    2: 'menu',      // X
+    2: 'shift',     // X
+    3: 'menu',      // Y
     4: 'pageup',    // LB
     5: 'pagedown',  // RB
     12: 'up',       // D-pad up

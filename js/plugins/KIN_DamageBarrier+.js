@@ -179,14 +179,14 @@ Game_Action.prototype.apply = function(target) {
     }
     if(stateid > 0){
         var type = this.item().meta.barrier_type;
-        var value = this.item().meta.barrier_value;
-        value = parseInt(value);
-        if(!(value>=0 || value<=0)) value = 0;
+        var value = this.item().meta.barrier_value || 0;
         if(type != null && type.indexOf("target_mhp") >= 0) target._damageBarrier[stateid] = parseInt(target.mhp * value / 100);
         if(type != null && type.indexOf("this_mhp") >= 0) target._damageBarrier[stateid] = parseInt(this.subject().mhp * value / 100);
         if(type != null && type.indexOf("damage") >= 0) target._damageBarrier[stateid] = parseInt(Math.abs(result.hpDamage) * value / 100);
         if(type != null && type.indexOf("fixed") >= 0) target._damageBarrier[stateid] = parseInt(value);
-        if(type != null && type.indexOf("formula") >= 0) target._damageBarrier[stateid] = parseInt(eval(value));
+        if(type != null && type.indexOf("formula") >= 0){
+          target._damageBarrier[stateid] = parseInt(eval(value));
+        }
     }
 };
 
@@ -231,6 +231,11 @@ Game_Battler.prototype.regenerateHp = function() {
     }
     value -= dot;
     value = Math.max(value, -this.maxSlipDamage());
+    this.states().forEach(function(state){
+      if(state.meta.zombie){
+        if(value < 0)value *= -1;
+      }
+    });
     if(value < 0){
     for(var i = 0; i < this.states().length; i++){
         var state = this.states()[i];
@@ -275,7 +280,12 @@ Game_Battler.prototype.regenerateHp = function() {
 
 Game_Battler.prototype.regenerateMp = function() {
     var value = Math.floor(this.mmp * this.mrg);
-    if(value < 0){
+    this.states().forEach(function(state){
+      if(state.meta.zombie){
+        if(value < 0)value *= -1;
+      }
+    });
+    /*if(value < 0){
     for(var i = 0; i < this.states().length; i++){
         var state = this.states()[i];
         var bar = state.meta.barrier;
@@ -290,7 +300,7 @@ Game_Battler.prototype.regenerateMp = function() {
             break;
         }
     }
-    }
+  }*/
     if (value !== 0) {
         this.gainMp(value);
     }

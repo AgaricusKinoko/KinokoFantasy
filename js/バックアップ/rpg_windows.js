@@ -1472,10 +1472,10 @@ function Window_Help() {
 Window_Help.prototype = Object.create(Window_Base.prototype);
 Window_Help.prototype.constructor = Window_Help;
 
-Window_Help.prototype.initialize = function(numLines) {
+Window_Help.prototype.initialize = function(numLines, x, y) {
     var width = Graphics.boxWidth;
     var height = this.fittingHeight(numLines || 2);
-    Window_Base.prototype.initialize.call(this, 0, 0, width, height);
+    Window_Base.prototype.initialize.call(this, x || 0, y || 0, width, height);
     this._text = '';
 };
 

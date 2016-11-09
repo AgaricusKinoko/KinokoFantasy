@@ -1,4 +1,4 @@
-﻿//=============================================================================
+//=============================================================================
 // SimpleMsgSideView.js
 //=============================================================================
 
@@ -17,7 +17,7 @@
  * @help This plugin does not provide plugin commands.
  *
  * By not displaying the log and only displaying the skill name,
- * the speed of battle will increase slightly. 
+ * the speed of battle will increase slightly.
  */
 
 /*:ja
@@ -55,17 +55,17 @@
 
   // for sideview battle only
   Window_BattleLog.prototype.addItemNameText = function(itemName) {
-    if(itemName != "") this._lines.push(itemName);
+    this._lines.push(itemName);
     this.refresh();
     this.wait();
   };
 
-  var _Window_BattleLog_displayAction = 
+  var _Window_BattleLog_displayAction =
    Window_BattleLog.prototype.displayAction;
   Window_BattleLog.prototype.displayAction = function(subject, item) {
     if($gameSystem.isSideView()){
       if(displayAttack ||
-       !(DataManager.isSkill(item) && item.id == subject.attackSkillId())) {
+       !(DataManager.isSkill(item) && item.id == subject.attackSkillId() && (item.id == 1 || item.id == 5 || item.id == 6 || item.name == ""))) {
 　　    this.push('addItemNameText', item.name);  // display item/skill name
       } else {
         this.push('wait');

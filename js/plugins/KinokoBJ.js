@@ -44,7 +44,7 @@
  * ～プラグインを導入する前に～
  * このプラグインではトランプの画像を使用するため、
  * c1.pngからz1.pngまでをpicturesフォルダに入れてください。
- * 
+ *
  * ～プラグインコマンド～
  * KinokoBJ open
  * 　ブラックジャックが起動します。
@@ -176,17 +176,17 @@ Scene_Kinoko.prototype.drawImage = function(p,id,name,x,y) {
     this.kinokoSprite[p][id] = new Sprite();
     this.kinokoSprite[p][id].position.x = x;
     this.kinokoSprite[p][id].position.y = y;
-    this.kinokoBitmap = ImageManager.loadPicture(name);    
+    this.kinokoBitmap = ImageManager.loadPicture(name);
     this.kinokoSprite[p][id].bitmap = this.kinokoBitmap;
     this.addChild(this.kinokoSprite[p][id]);
 };
 
 Scene_Kinoko.prototype.changeImage = function(p,id,name) {
-    this.kinokoBitmap = ImageManager.loadPicture(name);    
+    this.kinokoBitmap = ImageManager.loadPicture(name);
     this.kinokoSprite[p][id].bitmap = this.kinokoBitmap;
 }
 
-Scene_Kinoko.prototype.clearImage = function(p,id) {   
+Scene_Kinoko.prototype.clearImage = function(p,id) {
     this.removeChild(this.kinokoSprite[p][id]);
 }
 

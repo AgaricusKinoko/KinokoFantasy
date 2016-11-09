@@ -49,7 +49,7 @@ Game_Action.prototype.apply = function(target) {
         var proc_proba = procProbaArray[i];
         var proc_critical = procCriticalArray[i];
         var proc_conditions = procConditionsArray[i];
-        if(result.isHit()){
+        if(result.isHit() || item.meta.deadTarget){
             if(proc_conditions > 0 && a.isStateAffected(proc_conditions) == false) continue;
             if(proc_conditions > 0) a.removeState(proc_conditions);
             if(Math.random() < proc_proba){
@@ -73,7 +73,6 @@ Game_Action.prototype.apply = function(target) {
             }
         }
     }
-
 };
 
 Game_Action.prototype.playProcSound = function() {

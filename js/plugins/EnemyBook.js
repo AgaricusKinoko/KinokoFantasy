@@ -1,4 +1,4 @@
-﻿//=============================================================================
+//=============================================================================
 // EnemyBook.js
 //=============================================================================
 
@@ -304,7 +304,7 @@
             this.changeTextColor(this.systemColor());
             this.drawText(TextManager.param(i), x, y, 160);
             this.resetTextColor();
-            this.drawText(enemy.params[i], x + 160, y, 100, 'right');
+            this.drawText(enemy.params[i], x + 160, y, 60, 'right');
             y += lineHeight;
         }
 

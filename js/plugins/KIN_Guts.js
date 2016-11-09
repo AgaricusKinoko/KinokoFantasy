@@ -7,7 +7,7 @@
  *
  * @author Agaricus_Mushroom
  *
- * @help 
+ * @help
  * ～使い方～
  * 装備、もしくはステートのメモ欄に以下の記述をしてください。
  * <guts:X>
@@ -38,9 +38,9 @@ Game_BattlerBase.prototype.setHp = function(hp) {
                     if(id != 0){
                         this.addState(id);
                     }
-                    this.removeState(state.stateId);
+                    this.removeState(state.id);
                 }
-            });
+            }, this);
         }
     }
     Kinoko_setHp.call(this, hp);

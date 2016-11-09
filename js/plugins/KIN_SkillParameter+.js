@@ -48,6 +48,18 @@ var Kinoko_Cri = Game_Action.prototype.itemCri;
 var Kinoko_Hit = Game_Action.prototype.itemHit;
 var Kinoko_EnemyI = Game_Enemy.prototype.initialize;
 
+Object.defineProperty(Game_BattlerBase.prototype, 'cru', {
+	get: function() {
+		var value = 0.0;
+		this.traitObjects().forEach(function(object) {
+			var cru = parseFloat(object.meta.critical_up) || 0.0;
+			value += cru;
+		});
+		return Math.max(value, 0.0);
+	},
+	configurable: true
+});
+
 Game_Action.prototype.itemCri = function(target) {
     Kinoko_Cri.call(this,target);
     var cri = this.item().meta.critical;
@@ -60,7 +72,9 @@ Game_Action.prototype.itemCri = function(target) {
     if(stateid > 0){
         if(!this.subject().isStateAffected(stateid)) cri = 0;
     }
-    return this.item().damage.critical ? this.subject().cri * (1 - target.cev)+(cri * 0.01) : 0;
+		var cru = target.cru;
+		if((this.subject().isActor() && target.isActor()) || (this.subject().isEnemy() && target.isEnemy())) cru = 0;
+    return this.item().damage.critical ? this.subject().cri * (1 - target.cev)+(cri * 0.01) + cru : 0;
 };
 
 Game_Action.prototype.KIN_luckRate = function(target){
@@ -112,7 +126,7 @@ Game_Action.prototype.KIN_levelRate = function(target){
     } else {
         thisLevel = a.level;
     }
-    return Math.max(1.0 + ((thisLevel - targetLevel) / 20), 0.0);
+    return Math.max(1.0 + ((thisLevel - targetLevel) / 40), 0.0);
 }
 
 Game_Action.prototype.itemEffectAddAttackState = function(target, effect) {
@@ -121,6 +135,11 @@ Game_Action.prototype.itemEffectAddAttackState = function(target, effect) {
         chance *= target.stateRate(stateId);
         chance *= this.subject().attackStatesRate(stateId);
         if(this.item().meta.ignore_level == null && target.isEnemy() != this.subject().isEnemy()) chance *= this.KIN_levelRate(target);
+				target.states().forEach(function(state){
+					if(state.meta.resistDown){
+						chance *= state.meta.resistDown;
+					}
+				});
         if (Math.random() < chance) {
             target.addState(stateId);
             this.makeSuccess(target);

@@ -79,6 +79,7 @@ var Game_BattlerBase_prototype_states = Game_BattlerBase.prototype.states;
 var Game_Action_prototype_apply = Game_Action.prototype.apply;
 var Window_Base_drawActorIcons = Window_Base.prototype.drawActorIcons;
 var Game_BattlerBase_prototype_isOccasionOk = Game_BattlerBase.prototype.isOccasionOk;
+var Game_BattlerBase_prototype_clearStates = Game_BattlerBase.prototype.clearStates;
 
 var parameters = PluginManager.parameters('KIN_StateStack');
 var displayStack = Boolean(parameters['displayStack'] || true);
@@ -86,6 +87,31 @@ var stackFor1 = String(parameters['stackFor1'] || "").split(",");
 var stackFor100 = String(parameters['stackFor100'] || "").split(",");
 var stackForAdd1 = String(parameters['stackForAdd1'] || "").split(",");
 var stackForAdd100 = String(parameters['stackForAdd100'] || "").split(",");
+
+var backAction;
+
+BattleManager_endAction = BattleManager.endAction;
+BattleManager.endAction = function() {
+    BattleManager_endAction.call(this);
+    var subject = this._subject;
+    if(backAction && backBattler){
+      var item = backAction;
+      var a = backBattler;
+      var setArray = item.meta.setStack.split(/:|,/);
+      for(var i = 0; i < setArray.length; i+=2){
+          for(var j = 0; j < a._stackState.length; j++){
+              if(a._stackState[j].id == setArray[i]){
+                  var stack = a._stackState[j].stackCount;
+                  a._stackState[j].stackCount = parseInt(eval(setArray[i+1]));
+                  if(a._stackState[j].stackCount > parseInt(eval($dataStates[a._stackState[j].id].meta.stackMax))){ a._stackState[j].stackCount = parseInt(eval($dataStates[a._stackState[j].id].meta.stackMax)); }
+                  if(a._stackState[j].stackCount <= 0){ a.removeState(a._stackState[i].id); }
+              }
+          }
+      }
+    }
+    backAction = null;
+    backBattler = null;
+};
 
 Game_BattlerBase.prototype.isOccasionOk = function(item) {
     var battler = this;
@@ -127,6 +153,17 @@ Game_Battler.prototype.addState = function(stateId) {
                     } else {
                         battler._stackState[i].stackCount++;
                     }
+                    if(state.meta.after_stateS){
+                      nextState = state.meta.after_stateS.split(":");
+                      if(battler._stackState[i].stackCount >= nextState[0]){
+                        battler.removeState(stateId);
+                        if(nextState[1] == 1){
+                          battler.setHp(0);
+                        } else {
+                          battler.addState(nextState[1]);
+                        }
+                      }
+                    }
                 }
                 return;
             }
@@ -151,12 +188,23 @@ Game_Battler.prototype.addState = function(stateId) {
 
 Game_Battler.prototype.removeState = function(stateId) {
     Game_Battler_prototype_removeState.call(this, stateId);
+    this.resetStack(stateId);
+};
+
+Game_Battler.prototype.getStack = function(stateId) {
+    var stack = null;
+    this._stackState.forEach(function(state){
+      if(state.id == stateId) stack = state.stackCount;
+    });
+    return stack;
+}
+
+Game_Battler.prototype.resetStack = function(stateId) {
     var battler = this;
     var state = $dataStates[stateId];
     if(!this._stackState) this._stackState = new Array();
-    var battler = this;
     var state = $dataStates[stateId];
-    if(state.meta.stackMax){
+    if(state && state.meta.stackMax){
         for(var i = 0; i < battler._stackState.length; i++){
             if(battler._stackState[i].id == stateId){
                 battler._stackState[i].id == 0;
@@ -165,6 +213,11 @@ Game_Battler.prototype.removeState = function(stateId) {
             }
         }
     }
+};
+
+Game_BattlerBase.prototype.clearStates = function() {
+    Game_BattlerBase_prototype_clearStates.call(this);
+    if(this._stackState) this._stackState = null;
 };
 
 function clone(objects){
@@ -199,7 +252,11 @@ Game_BattlerBase.prototype.allTraits = function() {
         }
         return r.concat(obj.traits);
     }, []);
-    var returnArray = clone(traitsArray);
+    var returnArray = traitsArray;
+    returnArray = JSON.parse(JSON.stringify(returnArray));
+    /*returnArray.forEach(function(ar){
+      ar.value = JSON.parse(JSON.stringify(ar.value));
+    });*/
     stackTest.forEach(function(st){
         if(st.index >= 0){
             var stackValue = returnArray[st.index].value;
@@ -223,7 +280,10 @@ Game_BattlerBase.prototype.allTraits = function() {
 Game_BattlerBase.prototype.states = function() {
     var battler = this;
     var array = Game_BattlerBase_prototype_states.call(this);
-    var returnArray = clone(array);
+    var returnArray = array;
+    returnArray.forEach(function(ar){
+      ar.meta = JSON.parse(JSON.stringify(ar.meta));
+    });
     var a = this;
     for(var i = 0; i < returnArray.length; i++){
         if(battler._stackState && returnArray[i].meta.stackMax){
@@ -318,17 +378,8 @@ Game_Action.prototype.apply = function(target){
         });
     }
     if(item.meta.setStack){
-        var setArray = item.meta.setStack.split(/:|,/);
-        for(var i = 0; i < setArray.length; i+=2){
-            for(var j = 0; j < a._stackState.length; j++){
-                if(a._stackState[j].id == setArray[i]){
-                    var stack = a._stackState[j].stackCount;
-                    a._stackState[j].stackCount = parseInt(eval(setArray[i+1]));
-                    if(a._stackState[j].stackCount > parseInt(eval($dataStates[a._stackState[j].id].meta.stackMax))){ a._stackState[j].stackCount = parseInt(eval($dataStates[a._stackState[j].id].meta.stackMax)); }
-                    if(a._stackState[j].stackCount <= 0){ a.removeState(a._stackState[i].id); }
-                }
-            }
-        }
+        backBattler = this.subject();
+        backAction = item;
     }
     a.states().forEach(function(state){
         if(state.meta.stackMax && state.meta.stackDecrease == "skillApply"){

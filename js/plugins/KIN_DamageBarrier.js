@@ -9,11 +9,11 @@
  *
  * @param barrier_sound
  * @desc バリアでダメージを無効化した際のSEを設定します。
- * (デフォルト = Parry) 
+ * (デフォルト = Parry)
  * @default Parry
  *
  * @help ※再定義をするため、なるべく上の方に設置してください。
- * 
+ *
  * ～使い方～
  * バリアとして扱うステートのメモ欄に以下の記述をします。
  * <barrier:X>
@@ -181,9 +181,7 @@ Game_Action.prototype.apply = function(target) {
     }
     if(stateid > 0){
         var type = this.item().meta.barrier_type;
-        var value = this.item().meta.barrier_value;
-        value = parseInt(value);
-        if(!(value>=0 || value<=0)) value = 0;
+        var value = this.item().meta.barrier_value || 0;
         if(type != null && type.indexOf("target_mhp") >= 0) target._damageBarrier[stateid] = parseInt(target.mhp * value / 100);
         if(type != null && type.indexOf("this_mhp") >= 0) target._damageBarrier[stateid] = parseInt(this.subject().mhp * value / 100);
         if(type != null && type.indexOf("damage") >= 0) target._damageBarrier[stateid] = parseInt(Math.abs(result.hpDamage) * value / 100);

@@ -49,73 +49,48 @@
  * Credit is appreciated though.
  */
 
+var kinokoCount = 0;
 (function () {
     var parameters = $plugins.filter(function (p) {
         return p.description.contains('<lolaccount DisplayStateTurnsOnIcon>');
-    })[0].parameters; //Thanks to Iavra
-// decimal places to show for turn count
+    })[0].parameters;
     var decimalPlaces = parseInt(parameters['Decimal Places'] || 0);
-// size of turn text font
     var turnFontSize = parseInt(parameters['Font Size'] || 16);
-// position of turn text
     var turnTextPosition = String(parameters['Position'] || 'topright');
-
-// alias function
     var _Window_Base_drawActorIcons = Window_Base.prototype.drawActorIcons;
     Window_Base.prototype.drawActorIcons = function (actor, x, y, width) {
-        // the default we are making an alias for
+
         _Window_Base_drawActorIcons.call(this, actor, x, y, width);
 
-
-
-        // array of turn integers corresponding to each state/debuff/buff
         var turns = [];
-        // initialize loop variable
         var i = 0;
-        // for each state actor has
         actor.states().forEach(function (state) {
-            // check if autoremoval is not 0. If it is not 0 then it is removed
-            // automatically after a certain number of turns.
             if (state.autoRemovalTiming != 0 && state.iconIndex > 0) {
                 turns.push(actor._stateTurns[actor._states[i]]);
             }
             else {
-                // if autoremoval is 0, then it's a state that is not removed by
-                // turns, like defeat. add 0 to the array so that it is skipped
-                // when we are displaying the text.
-                turns.push(0);
+                turns.push(-1);
             }
-            // increment the loop variable
             i++;
         }, this);
-
-        // for each possible parameter that can have a
-        // buff or debuff
         for (var j = 0; j < actor._buffs.length; j++) {
-            // check if the parameter has a buff/debuff
             if (actor._buffs[j] !== 0) {
-                // if so add the number of turns the buff/debuff
-                // has to the turn array
                 turns.push(actor._buffTurns[j]);
             }
         }
-
         turns = turns.slice(0, Math.floor(width / Window_Base._iconWidth));
-
-        // set font size to parameter
         this.contents.fontSize = turnFontSize;
-        // for each state/debuff/buff, draw text for their turns remaining
         for (var i = 0; i < actor.allIcons().length; i++) {
-            // This is a check for whether the turns remaining is 0 or not
-            // if we don't check we'll get a 0 displayed for states like death
-            // turns[i] checks if turn is defined, if not we'll get an error with toFixed
-            if (turns[i] && turns[i] != 0) {
-                // draw the text for their turns remaining
+            if (turns[i] == 0 || (turns[i] && turns[i] != -1)) {
                 this.changeTextColor(this.powerUpColor());
+                if(turns[i] == 0){
+                  turns[i] = 1;
+                  this.changePaintOpacity(false);
+                }
                 this.drawText(turns[i].toFixed(decimalPlaces) + "t", this.turnsRemainingPosX(i,x) - 4, this.turnsRemainingPosY(y) + 18, Window_Base._iconWidth, 'center');
+                this.changePaintOpacity(true);
             }
         }
-        // reset font size so other stuff isn't resized as well
         this.resetFontSettings();
     };
 
